@@ -1,0 +1,8 @@
+{
+  "name": "Remix Arch. Ibrahim Al-Najjar — Architectural Studio \u0026 Academy",
+  "description": "Portfolio and online architectural academy of Arch. Ibrahim Al-Najjar, specializing in BIM, Revit, AutoCAD, Enscape, Lumion, Photoshop, and V-Ray.",
+  "requestFramePermissions": [],
+  "majorCapabilities": [
+    "MAJOR_CAPABILITY_SERVER_SIDE_GEMINI_API"
+  ]
+}

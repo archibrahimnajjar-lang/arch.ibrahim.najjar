@@ -1,0 +1,33 @@
+@import "tailwindcss";
+
+@layer base {
+  :root {
+    font-family: 'Plus Jakarta Sans', 'IBM Plex Sans Arabic', -apple-system, BlinkMacSystemFont, sans-serif;
+    color-scheme: dark;
+  }
+
+  html {
+    scroll-behavior: smooth;
+    background-color: #0A0A0A;
+    color: #F5F5F5;
+  }
+
+  body {
+    background-color: #0A0A0A;
+    color: #F5F5F5;
+    overflow-x: hidden;
+  }
+}
+
+[dir="rtl"] {
+  font-family: 'IBM Plex Sans Arabic', 'Plus Jakarta Sans', sans-serif;
+}
+
+.font-mono-tabular {
+  font-family: 'JetBrains Mono', 'IBM Plex Sans Arabic', monospace;
+  font-variant-numeric: tabular-nums;
+}
+
+.headline-balance {
+  text-wrap: balance;
+}
