@@ -11,18 +11,38 @@ import {
   ArrowUpLeft,
   ArrowUpRight,
   Award,
+  Check,
   CheckCircle2,
   ChevronDown,
   ChevronUp,
+  Copy,
+  Download,
+  ExternalLink,
+  Globe,
   Instagram,
   Lock,
   Mail,
   Maximize2,
   Menu,
   Plus,
+  Rocket,
   Sparkles,
+  Terminal,
   X,
 } from 'lucide-react';
+import { STANDALONE_HTML } from './standaloneHtml.ts';
+
+function GitHubIcon({ className = 'w-4 h-4' }: { className?: string }) {
+  return (
+    <svg viewBox="0 0 24 24" className={className} fill="currentColor">
+      <path
+        fillRule="evenodd"
+        clipRule="evenodd"
+        d="M12 2C6.477 2 2 6.484 2 12.017c0 4.425 2.865 8.18 6.839 9.504.5.092.682-.217.682-.483 0-.237-.008-.868-.013-1.703-2.782.605-3.369-1.343-3.369-1.343-.454-1.158-1.11-1.466-1.11-1.466-.908-.62.069-.608.069-.608 1.003.07 1.53 1.032 1.53 1.032.892 1.53 2.341 1.088 2.91.832.092-.647.35-1.088.636-1.338-2.22-.253-4.555-1.113-4.555-4.951 0-1.093.39-1.988 1.029-2.688-.103-.253-.446-1.272.098-2.65 0 0 .84-.27 2.75 1.026A9.564 9.564 0 0112 6.844c.85.004 1.705.115 2.504.337 1.909-1.296 2.747-1.027 2.747-1.027.546 1.379.202 2.398.1 2.651.64.7 1.028 1.595 1.028 2.688 0 3.848-2.339 4.695-4.566 4.943.359.309.678.92.678 1.855 0 1.338-.012 2.419-.012 2.747 0 .268.18.58.688.482A10.019 10.019 0 0022 12.017C22 6.484 17.522 2 12 2z"
+      />
+    </svg>
+  );
+}
 
 const INSTAGRAM_URL =
   'https://www.instagram.com/arch.ibrahim.najar?exln=MTMxNWlqYWYxNDQ0eg%3D%3D&utm_source=qr';
@@ -2080,6 +2100,41 @@ export default function App() {
     restDelta: 0.001,
   });
   const [showScrollTop, setShowScrollTop] = useState(false);
+  const [showDeployGuide, setShowDeployGuide] = useState(false);
+  const [copiedCommand, setCopiedCommand] = useState(false);
+  const [downloadSuccess, setDownloadSuccess] = useState(false);
+
+  const handleCopyGitCommands = () => {
+    const commands = `git init
+git add .
+git commit -m "الموقع الرسمي للمهندس إبراهيم النجار"
+git branch -M main
+git remote add origin https://github.com/YOUR_USERNAME/YOUR_REPO.git
+git push -u origin main`;
+
+    navigator.clipboard.writeText(commands).then(() => {
+      setCopiedCommand(true);
+      setTimeout(() => setCopiedCommand(false), 2500);
+    });
+  };
+
+  const handleDownloadStandaloneHtml = () => {
+    try {
+      const blob = new Blob([STANDALONE_HTML], { type: 'text/html;charset=utf-8' });
+      const url = URL.createObjectURL(blob);
+      const a = document.createElement('a');
+      a.href = url;
+      a.download = 'index.html';
+      document.body.appendChild(a);
+      a.click();
+      document.body.removeChild(a);
+      URL.revokeObjectURL(url);
+      setDownloadSuccess(true);
+      setTimeout(() => setDownloadSuccess(false), 3000);
+    } catch (err) {
+      console.error('Failed to download standalone HTML', err);
+    }
+  };
 
   useEffect(() => {
     const handleScroll = () => {
@@ -2128,6 +2183,18 @@ export default function App() {
           </nav>
 
           <div className="flex items-center gap-2.5 sm:gap-3 shrink-0">
+            <button
+              type="button"
+              onClick={() => setShowDeployGuide(true)}
+              title={isRtl ? 'دليل استضافة الموقع على GitHub Pages' : 'Deploy to GitHub Pages'}
+              className="inline-flex items-center gap-1.5 px-2.5 sm:px-3 py-1.5 text-xs font-medium text-cyan-300 hover:text-white bg-cyan-950/40 border border-cyan-500/40 hover:border-cyan-400 rounded transition-all cursor-pointer shadow-sm hover:shadow-[0_0_12px_rgba(6,182,212,0.25)]"
+            >
+              <GitHubIcon className="w-3.5 h-3.5 text-cyan-400" />
+              <span className="hidden sm:inline font-mono-tabular text-[11px]">
+                {isRtl ? 'استضافة GitHub' : 'GitHub Deploy'}
+              </span>
+            </button>
+
             <a
               href={INSTAGRAM_URL}
               target="_blank"
@@ -2178,12 +2245,23 @@ export default function App() {
             <a href="#contact" onClick={() => setMobileMenuOpen(false)} className="block py-1.5 text-sm font-medium text-[#F5F5F5]">
               {isRtl ? 'تواصل معنا' : "Let's talk"}
             </a>
+            <button
+              type="button"
+              onClick={() => {
+                setMobileMenuOpen(false);
+                setShowDeployGuide(true);
+              }}
+              className="w-full flex items-center gap-2 pt-2 border-t border-[#1F1F1F] text-xs font-semibold text-cyan-300 hover:text-white"
+            >
+              <GitHubIcon className="w-4 h-4 text-cyan-400" />
+              <span>{isRtl ? '🚀 استضافة الموقع على GitHub Pages' : '🚀 Deploy to GitHub Pages'}</span>
+            </button>
             <a
               href={INSTAGRAM_URL}
               target="_blank"
               rel="noopener noreferrer"
               onClick={() => setMobileMenuOpen(false)}
-              className="flex items-center gap-2 pt-2 border-t border-[#1F1F1F] text-xs font-medium text-[#F472B6]"
+              className="flex items-center gap-2 pt-1 text-xs font-medium text-[#F472B6]"
             >
               <Instagram className="w-4 h-4 text-[#E1306C]" />
               <span>{isRtl ? 'تابعنا على إنستغرام (@arch.ibrahim.najar)' : 'Follow on Instagram (@arch.ibrahim.najar)'}</span>
@@ -4026,6 +4104,14 @@ export default function App() {
               <Instagram className="w-3.5 h-3.5 text-[#E1306C]" />
               <span>@arch.ibrahim.najar</span>
             </a>
+            <button
+              type="button"
+              onClick={() => setShowDeployGuide(true)}
+              className="inline-flex items-center gap-1.5 text-xs text-cyan-400 hover:text-cyan-300 transition-colors cursor-pointer"
+            >
+              <GitHubIcon className="w-3.5 h-3.5" />
+              <span>{isRtl ? 'دليل استضافة الموقع على GitHub Pages' : 'GitHub Pages Hosting Guide'}</span>
+            </button>
           </div>
           <p className="font-mono-tabular tracking-wider text-xs text-[#888888]">
             {isRtl ? 'استوديو معماري وتدريب احترافي' : 'ARCHITECTURAL STUDIO & INSTRUCTION'}
@@ -4077,6 +4163,241 @@ export default function App() {
                 <p>{activeLightbox.subtitle}</p>
               </div>
             )}
+          </div>
+        </div>
+      )}
+
+      {/* GITHUB PAGES DEPLOYMENT GUIDE MODAL */}
+      {showDeployGuide && (
+        <div
+          className="fixed inset-0 z-50 bg-black/90 backdrop-blur-md flex items-center justify-center p-3 sm:p-6"
+          onClick={() => setShowDeployGuide(false)}
+        >
+          <div
+            className="max-w-3xl w-full bg-[#10141D] border border-cyan-500/40 rounded-2xl overflow-hidden shadow-[0_0_60px_rgba(0,0,0,0.85)] max-h-[90vh] flex flex-col"
+            onClick={(e) => e.stopPropagation()}
+          >
+            {/* Modal Header */}
+            <div className="flex items-center justify-between px-6 py-4 border-b border-[#1E2636] bg-[#0B0F17] shrink-0">
+              <div className="flex items-center gap-3">
+                <div className="w-10 h-10 rounded-xl bg-cyan-950/60 border border-cyan-500/40 flex items-center justify-center text-cyan-400">
+                  <GitHubIcon className="w-5 h-5" />
+                </div>
+                <div>
+                  <span className="font-mono text-[11px] text-cyan-400 font-semibold tracking-wider uppercase flex items-center gap-1.5">
+                    <Rocket className="w-3.5 h-3.5 text-cyan-400" />
+                    {isRtl ? 'استضافة مجانية مدى الحياة' : 'FREE LIFETIME HOSTING'}
+                  </span>
+                  <h3 className="text-base sm:text-lg font-bold text-[#F5F5F5] mt-0.5">
+                    {isRtl ? 'دليل استضافة الموقع على GitHub Pages' : 'Deploy to GitHub Pages Guide'}
+                  </h3>
+                </div>
+              </div>
+              <button
+                type="button"
+                onClick={() => setShowDeployGuide(false)}
+                aria-label="Close"
+                className="p-2 text-[#888888] hover:text-[#F5F5F5] hover:bg-[#1A2332] rounded-lg border border-[#1E2636] transition-colors cursor-pointer"
+              >
+                <X className="w-5 h-5" />
+              </button>
+            </div>
+
+            {/* Modal Scrollable Body */}
+            <div className="p-6 overflow-y-auto space-y-6 text-sm text-[#CBD5E1]">
+              {/* Ready Status Card */}
+              <div className="p-4 rounded-xl bg-cyan-950/25 border border-cyan-500/30 flex items-start gap-3">
+                <CheckCircle2 className="w-5 h-5 text-cyan-400 shrink-0 mt-0.5" />
+                <div>
+                  <h4 className="text-sm font-bold text-cyan-200">
+                    {isRtl ? 'المشروع مُجهّز 100% للنشر الفوري' : 'Project is 100% Ready for Instant Deployment'}
+                  </h4>
+                  <p className="text-xs text-[#94A3B8] mt-1 leading-relaxed">
+                    {isRtl
+                      ? 'تم ضبط مسار الأصول النسبي (base: "./") وإضافة ملف العمل التلقائي (.github/workflows/deploy.yml)؛ سيتكفل GitHub ببناء الموقع ونشره ذاتياً عند كل تحديث بدون أي إعدادات معقدة!'
+                      : 'Relative assets (base: "./") and GitHub Actions automation (.github/workflows/deploy.yml) are already configured. GitHub will build and host your site automatically!'}
+                  </p>
+                </div>
+              </div>
+
+              {/* 3 Simple Steps */}
+              <div className="space-y-4">
+                <h4 className="font-bold text-white text-base flex items-center gap-2">
+                  <span className="w-6 h-6 rounded-full bg-cyan-500/20 text-cyan-300 text-xs flex items-center justify-center font-mono">3</span>
+                  {isRtl ? 'ثلاث خطوات بسيطة ليكون موقعك حياً:' : 'Three simple steps to go live:'}
+                </h4>
+
+                {/* Step 1 */}
+                <div className="p-4 rounded-xl bg-[#0B0F17] border border-[#1E2636] space-y-2">
+                  <div className="flex items-center justify-between">
+                    <span className="font-mono text-xs text-cyan-400 font-semibold">
+                      {isRtl ? 'الخطوة 1: إنشاء مستودع جديد' : 'Step 1: Create a New GitHub Repository'}
+                    </span>
+                    <a
+                      href="https://github.com/new"
+                      target="_blank"
+                      rel="noopener noreferrer"
+                      className="inline-flex items-center gap-1.5 text-xs text-cyan-300 hover:text-white underline underline-offset-4"
+                    >
+                      <span>github.com/new</span>
+                      <ExternalLink className="w-3 h-3" />
+                    </a>
+                  </div>
+                  <p className="text-xs text-[#94A3B8] leading-relaxed">
+                    {isRtl
+                      ? 'افتح GitHub وأنشئ مستودعاً جديداً (Public Repository). يمكنك تسميته مثلاً: arch-ibrahim أو alnajjar-portfolio أو حتى باسم حسابك (username.github.io).'
+                      : 'Open GitHub and create a new public repository (e.g. arch-ibrahim, alnajjar-portfolio, or username.github.io).'}
+                  </p>
+                </div>
+
+                {/* Step 2 */}
+                <div className="p-4 rounded-xl bg-[#0B0F17] border border-[#1E2636] space-y-3">
+                  <div className="flex items-center justify-between">
+                    <span className="font-mono text-xs text-cyan-400 font-semibold flex items-center gap-1.5">
+                      <Terminal className="w-3.5 h-3.5" />
+                      {isRtl ? 'الخطوة 2: رفع كود المشروع إلى GitHub' : 'Step 2: Push Your Project Code to GitHub'}
+                    </span>
+                    <button
+                      type="button"
+                      onClick={handleCopyGitCommands}
+                      className="inline-flex items-center gap-1.5 px-3 py-1 rounded bg-cyan-950/60 hover:bg-cyan-900 border border-cyan-500/40 text-xs text-cyan-300 cursor-pointer transition-colors"
+                    >
+                      {copiedCommand ? (
+                        <>
+                          <Check className="w-3.5 h-3.5 text-green-400" />
+                          <span className="text-green-300 font-semibold">{isRtl ? 'تم النسخ!' : 'Copied!'}</span>
+                        </>
+                      ) : (
+                        <>
+                          <Copy className="w-3.5 h-3.5" />
+                          <span>{isRtl ? 'نسخ الأوامر' : 'Copy Commands'}</span>
+                        </>
+                      )}
+                    </button>
+                  </div>
+                  <p className="text-xs text-[#94A3B8]">
+                    {isRtl
+                      ? 'نفذ هذه الأوامر في موجه الأوامر (Terminal) داخل مجلد المشروع، أو ارفع الملفات عبر تطبيق GitHub Desktop:'
+                      : 'Run these commands in your project terminal, or drag files using GitHub Desktop:'}
+                  </p>
+                  <pre
+                    dir="ltr"
+                    className="p-3.5 rounded-lg bg-[#070A0F] border border-[#1E2636] text-[11px] sm:text-xs font-mono text-[#E2E8F0] overflow-x-auto selection:bg-cyan-500/30"
+                  >
+{`git init
+git add .
+git commit -m "Arch. Ibrahim website initial commit"
+git branch -M main
+git remote add origin https://github.com/YOUR_USERNAME/YOUR_REPO.git
+git push -u origin main`}
+                  </pre>
+                  <p className="text-[11px] text-[#888888]">
+                    {isRtl
+                      ? '* استبدل YOUR_USERNAME باسم حسابك، و YOUR_REPO باسم المستودع الذي أنشأته.'
+                      : '* Replace YOUR_USERNAME and YOUR_REPO with your GitHub username and repository name.'}
+                  </p>
+                </div>
+
+                {/* Step 3 */}
+                <div className="p-4 rounded-xl bg-[#0B0F17] border border-[#1E2636] space-y-2">
+                  <span className="font-mono text-xs text-cyan-400 font-semibold">
+                    {isRtl ? 'الخطوة 3: تفعيل GitHub Pages بنقرة واحدة' : 'Step 3: Enable GitHub Pages'}
+                  </span>
+                  <div className="text-xs text-[#94A3B8] space-y-1.5 leading-relaxed">
+                    <p>
+                      {isRtl
+                        ? '1. في صفحة مستودعك على GitHub، اضغط على تبويب Settings (الإعدادات).'
+                        : '1. In your repository on GitHub, click the "Settings" tab.'}
+                    </p>
+                    <p>
+                      {isRtl
+                        ? '2. من القائمة الجانبية اليسرى اختر Pages.'
+                        : '2. From the left sidebar, select "Pages".'}
+                    </p>
+                    <p className="text-cyan-200 font-medium">
+                      {isRtl
+                        ? '3. تحت خيار "Source"، غيّر القائمة من (Deploy from a branch) إلى: 👉 GitHub Actions.'
+                        : '3. Under "Source", switch from (Deploy from a branch) to: 👉 GitHub Actions.'}
+                    </p>
+                  </div>
+                </div>
+              </div>
+
+              {/* What you get / Final URL */}
+              <div className="p-4 rounded-xl bg-gradient-to-r from-cyan-950/40 to-blue-950/30 border border-cyan-500/40 space-y-2">
+                <span className="font-mono text-[11px] text-cyan-300 font-bold uppercase flex items-center gap-1.5">
+                  <Globe className="w-3.5 h-3.5 text-cyan-400" />
+                  {isRtl ? 'رابط موقعك الرسمي المباشر' : 'Your Live Production URL'}
+                </span>
+                <p className="text-xs text-[#CBD5E1] leading-relaxed">
+                  {isRtl
+                    ? 'بمجرد انتهاء الأكشن التلقائي (خلال دقيقة واحدة)، سيكون موقعك متاحاً ومستضافاً مجاناً مدى الحياة على الرابط:'
+                    : 'Once GitHub Actions completes the automatic build (approx 1 minute), your site will be live at:'}
+                </p>
+                <div dir="ltr" className="p-2.5 rounded bg-black/60 border border-cyan-500/30 font-mono text-xs text-cyan-300">
+                  https://&lt;YOUR_USERNAME&gt;.github.io/&lt;YOUR_REPO&gt;/
+                </div>
+              </div>
+
+              {/* Custom Domain Section */}
+              <div className="p-4 rounded-xl bg-[#0B0F17] border border-[#1E2636] space-y-2">
+                <h5 className="font-bold text-white text-xs flex items-center gap-2">
+                  <Globe className="w-4 h-4 text-cyan-400" />
+                  {isRtl ? 'هل تريد ربط نطاق مخصص خاص بك (مثل: arch-ibrahim.com)؟' : 'Want to connect a custom domain (e.g. arch-ibrahim.com)?'}
+                </h5>
+                <p className="text-xs text-[#94A3B8] leading-relaxed">
+                  {isRtl
+                    ? 'في نفس صفحة Settings > Pages على GitHub، يمكنك كتابة الدومين الخاص بك في خانة Custom domain وحفظه، مع تفعيل Enforce HTTPS للحصول على شهادة SSL مجانية وتلقائية!'
+                    : 'In the same Settings > Pages page, enter your custom domain in the "Custom domain" field and enable "Enforce HTTPS" for free automatic SSL.'}
+                </p>
+              </div>
+
+              {/* Quick Standalone HTML Download Alternative */}
+              <div className="p-4 rounded-xl bg-[#141923] border border-[#1E2636] flex flex-col sm:flex-row sm:items-center justify-between gap-4">
+                <div>
+                  <h5 className="font-bold text-white text-xs flex items-center gap-2">
+                    <Download className="w-4 h-4 text-cyan-400" />
+                    {isRtl ? 'تحميل ملف HTML الشامل المستقل (بنقرة واحدة)' : 'Download Standalone Single-File HTML'}
+                  </h5>
+                  <p className="text-[11px] text-[#94A3B8] mt-1">
+                    {isRtl
+                      ? 'يمكنك تنزيل صفحة index.html واحدة مدمجة بالكامل لفتحها على أي جهاز مباشرة أو رفعها لأي استضافة سريعة.'
+                      : 'Download a standalone single index.html file that works out-of-the-box in any browser or static host.'}
+                  </p>
+                </div>
+                <button
+                  type="button"
+                  onClick={handleDownloadStandaloneHtml}
+                  className="px-4 py-2.5 rounded-xl bg-cyan-950/60 hover:bg-cyan-900 border border-cyan-500/40 text-xs font-semibold text-cyan-300 hover:text-white transition-all cursor-pointer whitespace-nowrap flex items-center justify-center gap-2 shrink-0"
+                >
+                  {downloadSuccess ? (
+                    <>
+                      <Check className="w-4 h-4 text-green-400" />
+                      <span className="text-green-300">{isRtl ? 'تم التحميل!' : 'Downloaded!'}</span>
+                    </>
+                  ) : (
+                    <>
+                      <Download className="w-4 h-4" />
+                      <span>{isRtl ? 'تحميل index.html' : 'Download index.html'}</span>
+                    </>
+                  )}
+                </button>
+              </div>
+            </div>
+
+            {/* Modal Footer */}
+            <div className="px-6 py-3.5 border-t border-[#1E2636] bg-[#0B0F17] flex items-center justify-between shrink-0">
+              <span className="text-[11px] font-mono text-[#64748B]">
+                {isRtl ? 'ملف README.md يحتوي أيضاً على كافة التفاصيل داخل المشروع' : 'Full instructions are also saved in README.md'}
+              </span>
+              <button
+                type="button"
+                onClick={() => setShowDeployGuide(false)}
+                className="px-4 py-1.5 rounded-lg bg-[#141A24] hover:bg-[#1E2636] border border-[#1E2636] text-xs font-medium text-white transition-colors cursor-pointer"
+              >
+                {isRtl ? 'إغلاق' : 'Close'}
+              </button>
+            </div>
           </div>
         </div>
       )}
